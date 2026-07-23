@@ -164,6 +164,11 @@ model:
 #
 #   # Data policy: "allow" (default) or "deny" to exclude providers that may store data
 #   # data_collection: "deny"
+#
+#   # Only route to zero-data-retention endpoints. Stricter than data_collection:
+#   # "deny" — nothing is stored at all, not just excluded from training.
+#   # Fails closed: models with no ZDR endpoint return 404 instead of falling back.
+#   # zdr: true
 
 # =============================================================================
 # OpenRouter Response Caching (only applies when using OpenRouter)

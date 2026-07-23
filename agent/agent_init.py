@@ -435,6 +435,7 @@ def init_agent(
     provider_sort: str = None,
     provider_require_parameters: bool = False,
     provider_data_collection: str = None,
+    provider_zdr: bool = False,
     openrouter_min_coding_score: Optional[float] = None,
     session_id: str = None,
     tool_progress_callback: callable = None,
@@ -762,6 +763,7 @@ def init_agent(
     agent.provider_sort = provider_sort
     agent.provider_require_parameters = provider_require_parameters
     agent.provider_data_collection = provider_data_collection
+    agent.provider_zdr = provider_zdr
     agent.openrouter_min_coding_score = openrouter_min_coding_score
 
     # Store toolset filtering options

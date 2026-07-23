@@ -1568,6 +1568,7 @@ class TestDelegationProviderIntegration(unittest.TestCase):
         parent.provider_sort = "price"
         parent.provider_require_parameters = True
         parent.provider_data_collection = "deny"
+        parent.provider_zdr = True
 
         with patch("run_agent.AIAgent") as MockAgent:
             mock_child = MagicMock()
@@ -1588,6 +1589,10 @@ class TestDelegationProviderIntegration(unittest.TestCase):
             self.assertIsNone(kwargs["provider_sort"])
             self.assertIs(kwargs["provider_require_parameters"], False)
             self.assertEqual(kwargs["provider_data_collection"], "")
+            # zdr survives the provider override on purpose: it is a privacy
+            # constraint, not a provider pin. Dropping it would silently route
+            # the child's prompts to a data-retaining endpoint.
+            self.assertIs(kwargs["provider_zdr"], True)
 
     @patch("tools.delegate_tool._load_config")
     @patch("tools.delegate_tool._resolve_delegation_credentials")
@@ -1608,6 +1613,7 @@ class TestDelegationProviderIntegration(unittest.TestCase):
         parent.provider_sort = "throughput"
         parent.provider_require_parameters = True
         parent.provider_data_collection = "deny"
+        parent.provider_zdr = True
 
         with patch("run_agent.AIAgent") as MockAgent:
             mock_child = MagicMock()
@@ -1624,6 +1630,7 @@ class TestDelegationProviderIntegration(unittest.TestCase):
         self.assertEqual(kwargs["provider_sort"], "throughput")
         self.assertIs(kwargs["provider_require_parameters"], True)
         self.assertEqual(kwargs["provider_data_collection"], "deny")
+        self.assertIs(kwargs["provider_zdr"], True)
 
     @patch("tools.delegate_tool._load_config")
     @patch("tools.delegate_tool._resolve_delegation_credentials")

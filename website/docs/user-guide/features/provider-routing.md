@@ -27,6 +27,7 @@ provider_routing:
   order: []               # Explicit provider priority order
   require_parameters: false  # Only use providers that support all parameters
   data_collection: null   # Control data collection ("allow" or "deny")
+  zdr: false              # Only use zero-data-retention endpoints
 ```
 
 :::info
@@ -101,6 +102,21 @@ Controls whether providers can use your prompts for training. Options are `"allo
 provider_routing:
   data_collection: "deny"
 ```
+
+### `zdr`
+
+Restricts routing to endpoints that operate under a Zero Data Retention policy — the provider does not persist your prompts or completions at all, even transiently for abuse monitoring. Set to `true` to enable; omit or leave `false` for the default behavior.
+
+```yaml
+provider_routing:
+  zdr: true
+```
+
+This is stricter than `data_collection: "deny"`. `data_collection` excludes providers that *train* on your data but still permits retention; `zdr` requires that nothing be stored in the first place. The two are independent and can be combined.
+
+:::warning
+`zdr` fails closed. If no ZDR-capable endpoint exists for the requested model, OpenRouter rejects the request with a 404 rather than silently falling back to a retaining provider. If you enable this and a specific model stops working, that model has no ZDR endpoint available.
+:::
 
 ## Practical Examples
 
@@ -181,7 +197,10 @@ providers_order    ← from provider_routing.order
 provider_sort      ← from provider_routing.sort
 provider_require_parameters ← from provider_routing.require_parameters
 provider_data_collection    ← from provider_routing.data_collection
+provider_zdr                ← from provider_routing.zdr
 ```
+
+Subagents spawned via delegation inherit the parent's routing preferences. When `delegation.provider` explicitly overrides the child's provider, the pinning filters (`only` / `ignore` / `order` / `sort` / `require_parameters` / `data_collection`) are cleared so the override is honored — but `zdr` is deliberately preserved, since dropping it would route the child's prompts to a retaining endpoint without the user asking for that.
 
 :::tip
 You can combine multiple options. For example, sort by price but exclude certain providers and require parameter support:

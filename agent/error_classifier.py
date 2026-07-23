@@ -342,12 +342,22 @@ _REQUEST_VALIDATION_PATTERNS = [
 # OpenRouter aggregator policy-block patterns.
 #
 # When a user's OpenRouter account privacy setting (or a per-request
-# `provider.data_collection: deny` preference) excludes the only endpoint
-# serving a model, OpenRouter returns 404 with a *specific* message that is
-# distinct from "model not found":
+# `provider.data_collection: deny` / `provider.zdr: true` preference) excludes
+# the only endpoint serving a model, OpenRouter returns 404 with a *specific*
+# message that is distinct from "model not found":
 #
 #   "No endpoints available matching your guardrail restrictions and
 #    data policy. Configure: https://openrouter.ai/settings/privacy"
+#
+# `provider.zdr: true` produces a distinct wording, verified live against
+# OpenRouter on 2026-07-22:
+#
+#   "No endpoints found matching your data policy (Zero data retention).
+#    Configure: https://openrouter.ai/settings/privacy"
+#
+# No extra pattern is needed for it — the existing
+# "no endpoints found matching your data policy" entry is a substring of
+# that message, so ZDR rejections already classify correctly.
 #
 # We classify this as `provider_policy_blocked` rather than
 # `model_not_found` because:

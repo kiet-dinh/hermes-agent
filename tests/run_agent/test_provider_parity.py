@@ -1120,6 +1120,20 @@ class TestProviderRouting:
         kwargs = agent._build_api_kwargs([{"role": "user", "content": "hi"}])
         assert kwargs["extra_body"]["provider"]["data_collection"] == "deny"
 
+    def test_zdr_enabled(self, monkeypatch):
+        agent = _make_agent(monkeypatch, "openrouter")
+        agent.provider_zdr = True
+        kwargs = agent._build_api_kwargs([{"role": "user", "content": "hi"}])
+        assert kwargs["extra_body"]["provider"]["zdr"] is True
+
+    def test_zdr_omitted_when_false(self, monkeypatch):
+        """`zdr` is a filter, not a tri-state — False must send nothing at all
+        rather than `zdr: false`, which OpenRouter treats as a distinct pref."""
+        agent = _make_agent(monkeypatch, "openrouter")
+        agent.provider_zdr = False
+        kwargs = agent._build_api_kwargs([{"role": "user", "content": "hi"}])
+        assert "zdr" not in kwargs.get("extra_body", {}).get("provider", {})
+
     def test_no_routing_when_unset(self, monkeypatch):
         agent = _make_agent(monkeypatch, "openrouter")
         kwargs = agent._build_api_kwargs([{"role": "user", "content": "hi"}])
@@ -1132,11 +1146,13 @@ class TestProviderRouting:
         agent.provider_sort = "latency"
         agent.providers_ignored = ["deepinfra"]
         agent.provider_data_collection = "deny"
+        agent.provider_zdr = True
         kwargs = agent._build_api_kwargs([{"role": "user", "content": "hi"}])
         prov = kwargs["extra_body"]["provider"]
         assert prov["sort"] == "latency"
         assert prov["ignore"] == ["deepinfra"]
         assert prov["data_collection"] == "deny"
+        assert prov["zdr"] is True
 
     def test_routing_not_injected_for_codex(self, monkeypatch):
         """Codex Responses API doesn't use extra_body.provider."""

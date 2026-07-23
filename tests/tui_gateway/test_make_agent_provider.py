@@ -63,7 +63,7 @@ def test_make_agent_passes_resolved_provider():
 def test_make_agent_forwards_provider_routing():
     """Parity with the messaging gateway + CLI: ``provider_routing`` in
     config.yaml must reach AIAgent so OpenRouter honors the user's sort /
-    only / ignore / order / require_parameters / data_collection prefs.
+    only / ignore / order / require_parameters / data_collection / zdr prefs.
 
     Regression for the desktop report (LewisDB): Discord respected
     provider_routing but the desktop app (tui_gateway backend) built agents
@@ -89,6 +89,7 @@ def test_make_agent_forwards_provider_routing():
             "sort": "throughput",
             "require_parameters": True,
             "data_collection": "deny",
+            "zdr": True,
         },
     }
 
@@ -115,6 +116,7 @@ def test_make_agent_forwards_provider_routing():
         assert kwargs["provider_sort"] == "throughput"
         assert kwargs["provider_require_parameters"] is True
         assert kwargs["provider_data_collection"] == "deny"
+        assert kwargs["provider_zdr"] is True
 
 
 def test_make_agent_provider_routing_defaults_when_unset():
@@ -155,6 +157,7 @@ def test_make_agent_provider_routing_defaults_when_unset():
         assert kwargs["provider_sort"] is None
         assert kwargs["provider_require_parameters"] is False
         assert kwargs["provider_data_collection"] is None
+        assert kwargs["provider_zdr"] is False
 
 
 def test_make_agent_ignores_display_personality_without_system_prompt():

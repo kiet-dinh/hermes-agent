@@ -856,6 +856,7 @@ These go in `~/.hermes/config.yaml` under the `provider_routing` section:
 | `order` | List of provider slugs to try in order |
 | `require_parameters` | Only use providers supporting all request params (`true`/`false`) |
 | `data_collection` | `"allow"` (default) or `"deny"` to exclude data-storing providers |
+| `zdr` | `true` to route only to zero-data-retention endpoints (`false` default). Stricter than `data_collection: "deny"`; returns 404 when no ZDR endpoint exists |
 
 :::tip
 Use `hermes config set` to set environment variables — it automatically saves them to the right file (`.env` for secrets, `config.yaml` for everything else).
